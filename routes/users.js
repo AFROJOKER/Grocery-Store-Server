@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const express = require("express");
 const bcrypt = require('bcrypt');
 const {UserModel, userValidation, loginValidation, createToken, createAdminToken} = require("../models/userModel");
-const {userAuth} = require("../middlewares/auth");
+const {userAuth, adminAuth} = require("../middlewares/auth");
 const router = express.Router();
 
 router.get("/",async (req,res)=>{
@@ -17,7 +17,7 @@ router.get("/",async (req,res)=>{
 })
 
 
-router.post("/", async (req,res)=>{
+router.post("/signup", async (req,res)=>{
     const validateBody = userValidation(req.body);
     if(validateBody.error){
         return res.status(400).json({err:validateBody.error.details});
@@ -25,15 +25,6 @@ router.post("/", async (req,res)=>{
     try{
         const user = new UserModel(req.body);
         user.password = await bcrypt.hash(user.password,10);
-
-        const adminEmails = process.env.ADMIN_EMAILS.split(' ');
-        if(adminEmails.includes(user.email))
-        {
-            user.role = "admin"
-        }
-        else{
-            user.role = "user"
-        }
         await user.save();
 
         user.password = "*****";
@@ -67,18 +58,9 @@ router.post("/login",async  (req,res)=>{
             return res.status(403).json("Wrong Password!");
         }
 
-        const token = createToken(user._id);
-        res.cookie("user_token", token,{maxAge:"100000000", httpOnly:true});
+        const token = createToken(user._id, user.role);
+        res.cookie("shop_token", token,{maxAge:"100000000", httpOnly:true});
 
-        const adminEmails = process.env.ADMIN_EMAILS.split(' ');
-        if(adminEmails.includes(user.email))
-        {
-            const token = createAdminToken(user._id);
-            res.cookie("admin_token", token,{maxAge:"100000000", httpOnly:true}); 
-        }
-        else{
-            res.clearCookie("admin_token");
-        }
         res.status(201).json(token);
 
     }
@@ -110,4 +92,20 @@ router.delete("/:id", userAuth,async(req,res)=>{
     }
 
 })
+
+
+router.patch("/:id/:role", adminAuth, async(req,res) => {
+    try{
+      const id = req.params.id;
+      const role = req.params.role;
+      const data = await UserModel.updateOne({_id:id},{role});
+      res.json(data);
+    }
+    catch(err){
+      console.log(err);
+      res.status(502).json({err})
+    }
+  })
+
+
 module.exports = router;

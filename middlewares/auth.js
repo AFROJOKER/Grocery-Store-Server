@@ -19,13 +19,17 @@ exports.userAuth = async (req,res,next)=>{
 }
 
 exports.adminAuth = async (req,res, next)=>{
-    const token = req.cookies.admin_token;
+    const token = req.cookies.shop_token;
 
     if(!token){
         return res.status(400).json({error:"No Admin Token Found!"});
     }
     try{
-        const tokenData = jwt.verify(token, process.env.SECRET_ADMIN_KEY);
+        const tokenData = jwt.verify(token, process.env.SECRET_KEY);
+        if(tokenData.role != "admin"){
+            res.status(401).json({err:"Not an Admin Token!"})
+
+        }
         req.tokenData = tokenData;
         next();
 

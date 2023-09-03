@@ -98,6 +98,13 @@ router.patch("/:id/:role", adminAuth, async(req,res) => {
     try{
       const id = req.params.id;
       const role = req.params.role;
+      if(id == req.tokenData._id){
+        return res.json("You try to change your own role!");
+      }
+      if(role != "user" || role != "admin")
+      {
+        return res.json("Enter valid role!");
+      }
       const data = await UserModel.updateOne({_id:id},{role});
       res.json(data);
     }

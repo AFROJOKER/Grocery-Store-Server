@@ -10,7 +10,7 @@ router.get("/", async(req,res)=>{
         const page = req.query.page - 1 || 0;
         const sort = req.query.sort || "_id";
         const reverse = req.query.reverse == "yes"? -1: 1;
-        const categories = req.query.categories? JSON.parse(req.query.categories): false;
+        const categories = req.query.categories && req.query.categories != "none"? JSON.parse(req.query.categories): false;
         const without = req.query.without == "yes"? true:false;
         let filter = {};
         let conditions = [];

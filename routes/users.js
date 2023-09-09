@@ -20,7 +20,7 @@ router.get("/",async (req,res)=>{
 router.post("/signup", async (req,res)=>{
     const validateBody = userValidation(req.body);
     if(validateBody.error){
-        return res.status(400).json({err:validateBody.error.details});
+        return res.status(432).json({err:validateBody.error.details});
     }
     try{
         const user = new UserModel(req.body);
@@ -32,7 +32,7 @@ router.post("/signup", async (req,res)=>{
     }
     catch(err){
         if(err.code == 11000){
-            return res.status(400).json("Email already exist!");
+            return res.status(433).json("Email already exist!");
         }
         console.log(err);
         res.status(502).json({err})
@@ -44,18 +44,18 @@ router.post("/login",async  (req,res)=>{
     const validateLogin = loginValidation(req.body);
     console.log(req.body);
     if(validateLogin.error){
-        return res.status(400).json(validateLogin.error.details);
+        return res.status(432).json(validateLogin.error.details);
     }
     try{
         const user = await UserModel.findOne({email:req.body.email});
         if(!user){
-            return res.status(402).json("Email not found!!");
+            return res.status(433).json("Email not found!!");
         }
         
         const passValidate = await bcrypt.compare(req.body.password, user.password);
 
         if(!passValidate){
-            return res.status(403).json("Wrong Password!");
+            return res.status(434).json("Wrong Password!");
         }
 
         const token = createToken(user._id, user.role);

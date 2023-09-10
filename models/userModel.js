@@ -9,9 +9,6 @@ const userSchema = new mongoose.Schema({
     password:String,
     role:{
       type:String, default:"user"
-    },
-    products:{
-        type:Array, default:[]
     }
 
   },{timestamps:true})

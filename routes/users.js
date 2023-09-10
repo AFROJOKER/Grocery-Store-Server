@@ -7,8 +7,20 @@ const router = express.Router();
 
 router.get("/",async (req,res)=>{
     try{
-        const users = await UserModel.find({},{"name":1,"email":1,"_id":0});
+        const users = await UserModel.find({},{"name":1,"email":1, "_id":0});
         res.status(201).json(users);
+    }
+    catch(err){
+        console.log(err);
+        res.status(502).json({err})
+    }
+})
+
+router.get("/single", userAuth,async (req,res)=>{
+    try{
+        const user_id = req.tokenData._id;
+        const user = await UserModel.findOne({_id:user_id},{"name":1,"email":1,"_id":0});
+        res.status(201).json(user);
     }
     catch(err){
         console.log(err);

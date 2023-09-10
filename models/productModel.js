@@ -12,7 +12,9 @@ const productSchema = new mongoose.Schema({
     },
     categories:{
         type:Array, default:[]
-    }
+    },
+    user_id:String
+
   },{timestamps:true})
 
 

@@ -68,6 +68,7 @@ router.post("/", adminAuth,async(req,res)=>{
     }
     try{
         const product = new ProductModel(req.body);
+        product.user_id = req.tokenData._id;
         await product.save();
         res.status(201).json(product);
     }
@@ -77,14 +78,20 @@ router.post("/", adminAuth,async(req,res)=>{
     }
 })
 
-router.put("/:id", adminAuth, async(req,res)=>{
+router.put("/:editId", adminAuth, async(req,res)=>{
     const validateBody = productUpdateValidation(req.body)
     if(validateBody.error){
        return res.status(400).json(validateBody.error.details);
     }
     try{
-        const data = await ProductModel.updateOne({_id:req.params.id},req.body);
-        res.status(201).json(data);
+        const data = await ProductModel.updateOne({_id:req.params.editId, user_id:req.tokenData._id},req.body);
+        if(data.modifiedCount == 0){
+            return res.status(201).json("Failed to Change Product(User ID of the Product doesn't Match the Current User's ID or Wrong Product ID)")
+        }
+        else{
+            res.status(201).json("Successfully Updated Product");
+
+        }
     }
     catch(err){
         console.log(err);
@@ -92,10 +99,16 @@ router.put("/:id", adminAuth, async(req,res)=>{
     }
 })
 
-router.delete("/:id", adminAuth, async (req,res)=>{
+router.delete("/:delId", adminAuth, async (req,res)=>{
     try{
-        const data = await ProductModel.deleteOne({_id:req.params.id});
-        res.status(200).json(data);
+        const data = await ProductModel.deleteOne({_id:req.params.delId, user_id:req.tokenData._id});
+        if(data.deletedCount == 0){
+            return res.status(201).json("Failed to Delete Product(User ID of the Product doesn't Match the Current User's ID or Wrong Product ID)")
+        }
+        else{
+            res.status(201).json("Successfully Deleted Product");
+
+        }
     }
     catch(err){
         console.log(err);

@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 
 exports.userAuth = async (req,res,next)=>{
-    const token = req.cookies.user_token;
+    const token = req.header("x-api-key");
 
     if(!token){
         return res.status(400).json({error:"No Token Found!"});
@@ -19,7 +19,7 @@ exports.userAuth = async (req,res,next)=>{
 }
 
 exports.adminAuth = async (req,res, next)=>{
-    const token = req.cookies.shop_token;
+    const token = req.header("x-api-key");
 
     if(!token){
         return res.status(400).json({error:"No Admin Token Found!"});

@@ -43,8 +43,3 @@ exports.createToken = (_id, role) =>{
     return token;
 }
 
-exports.createAdminToken = (_id)=>{
-    const token = jwt.sign({_id:_id},process.env.SECRET_ADMIN_KEY, {expiresIn:"600mins"});
-    return token;
-}
-

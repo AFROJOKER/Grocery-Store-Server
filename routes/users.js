@@ -71,8 +71,6 @@ router.post("/login",async  (req,res)=>{
         }
 
         const token = createToken(user._id, user.role);
-        res.cookie("shop_token", token,{maxAge:"100000000", httpOnly:true});
-
         res.status(201).json(token);
 
     }
@@ -86,10 +84,7 @@ router.post("/login",async  (req,res)=>{
 
 router.delete("/:id", userAuth,async(req,res)=>{
     try{
-        if(req.tokenData._id == req.params.id){
-            res.clearCookie("user_token");
-            res.clearCookie("admin_token");
-            
+        if(req.tokenData._id == req.params.id){            
             const data = await UserModel.deleteOne({_id:req.params.id});
             res.status(200).json(data);
         }

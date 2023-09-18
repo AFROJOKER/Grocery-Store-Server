@@ -21,7 +21,7 @@ router.get("/", async(req,res)=>{
         //Adding Conditions to the Filter Object
         const searchExp = new RegExp(req.query.filter, "i");
         conditions.push({$or:[{name:searchExp},{info:searchExp}]});
-        conditions.push({price:{$gte:minPrice, $lte:maxPrice}})
+        conditions.push({price:{$gte:minPrice, $lte:maxPrice}}) 
         categories && conditions.push({categories:{$in: categories}});
         filter.$and = conditions;
         

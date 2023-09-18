@@ -38,7 +38,6 @@ exports.loginValidation = (_reqbody) =>{
 
 
 exports.createToken = (_id, role) =>{
-    console.log(_id);
     const token = jwt.sign({_id, role},process.env.SECRET_KEY, {expiresIn:"600mins"});
     return token;
 }

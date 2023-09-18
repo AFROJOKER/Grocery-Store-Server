@@ -54,7 +54,6 @@ router.post("/signup", async (req,res)=>{
 
 router.post("/login",async  (req,res)=>{
     const validateLogin = loginValidation(req.body);
-    console.log(req.body);
     if(validateLogin.error){
         return res.status(432).json(validateLogin.error.details);
     }
@@ -84,12 +83,12 @@ router.post("/login",async  (req,res)=>{
 
 router.delete("/:id", userAuth,async(req,res)=>{
     try{
-        if(req.tokenData._id == req.params.id){            
+        if(req.tokenData._id == req.params.id || req.tokenData.role === "admin"){            
             const data = await UserModel.deleteOne({_id:req.params.id});
             res.status(200).json(data);
         }
         else{
-            return res.status(400).json({err:"Trying to delete a different user than yours!"})
+            return res.status(400).json({err:"You are not authorized to delete this user!"})
         }
 
     }

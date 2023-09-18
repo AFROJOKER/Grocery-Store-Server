@@ -19,6 +19,7 @@ exports.userAuth = async (req,res,next)=>{
     }
 }
 
+//Admin Authentication
 exports.adminAuth = async (req,res, next)=>{
     const token = req.header("x-api-key");
 

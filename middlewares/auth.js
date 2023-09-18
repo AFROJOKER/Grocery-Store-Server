@@ -22,7 +22,7 @@ exports.adminAuth = async (req,res, next)=>{
     const token = req.header("x-api-key");
 
     if(!token){
-        return res.status(400).json({error:"No Admin Token Found!"});
+        return res.status(400).json({error:"No Token Found!"});
     }
     try{
         const tokenData = jwt.verify(token, process.env.SECRET_KEY);

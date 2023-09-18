@@ -4,6 +4,8 @@ const {ProductModel, productValidation, productUpdateValidation} = require("../m
 const router = express.Router();
 const {userAuth, adminAuth} = require("../middlewares/auth");
 
+
+//Get Products
 router.get("/", async(req,res)=>{
     try{
         const limit = req.query.limit || 4;
@@ -27,11 +29,12 @@ router.get("/", async(req,res)=>{
         res.status(201).json(products);
     }
     catch(err){
-        console.log(err);
+            console.log(err);
         res.status(502).json({err})
     }
 })
 
+//Get Single Product
 router.get("/single/:id", async(req,res)=>{
     try{     
         const product = await ProductModel.findOne({_id:req.params.id});
@@ -44,7 +47,7 @@ router.get("/single/:id", async(req,res)=>{
     }
 })
 
-
+//Create Product
 router.post("/", adminAuth,async(req,res)=>{
     const validateBody = productValidation(req.body);
     if(validateBody.error){
@@ -62,6 +65,7 @@ router.post("/", adminAuth,async(req,res)=>{
     }
 })
 
+//Update Product
 router.put("/:editId", adminAuth, async(req,res)=>{
     const validateBody = productUpdateValidation(req.body)
     if(validateBody.error){
@@ -83,6 +87,7 @@ router.put("/:editId", adminAuth, async(req,res)=>{
     }
 })
 
+//Delete Product
 router.delete("/:delId", adminAuth, async (req,res)=>{
     try{
         const data = await ProductModel.deleteOne({_id:req.params.delId, user_id:req.tokenData._id});

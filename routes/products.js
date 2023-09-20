@@ -8,6 +8,7 @@ const {userAuth, adminAuth} = require("../middlewares/auth");
 //Get Products
 router.get("/", async(req,res)=>{
     try{
+        //Queries
         const limit = req.query.limit || 4;
         const page = req.query.page - 1 || 0;
         const sort = req.query.sort || "_id";
@@ -18,13 +19,14 @@ router.get("/", async(req,res)=>{
         let filter = {};
         let conditions = [];
 
-        //Adding Conditions to the Filter Object
+        //Adding Filters
         const searchExp = new RegExp(req.query.filter, "i");
-        conditions.push({$or:[{name:searchExp},{info:searchExp}]});
-        conditions.push({price:{$gte:minPrice, $lte:maxPrice}}) 
-        categories && conditions.push({categories:{$in: categories}});
-        filter.$and = conditions;
-        
+        filter.$or = [{name:searchExp},{info:searchExp}];
+        filter.price = {$gte:minPrice, $lte:maxPrice}
+        if(categories){
+            filter.categories = {$in: categories};
+        }
+
         const products = await ProductModel.find(filter).limit(limit).skip(page * limit).sort({[sort]:reverse});
         res.status(201).json(products);
     }

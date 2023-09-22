@@ -70,7 +70,7 @@ router.post("/login",async  (req,res)=>{
         }
 
         const token = createToken(user._id, user.role);
-        res.status(201).json(token);
+        res.status(201).json({token, role:user.role});
 
     }
     catch(err){
@@ -81,23 +81,7 @@ router.post("/login",async  (req,res)=>{
 })
 
 
-router.delete("/:id", userAuth,async(req,res)=>{
-    try{
-        if(req.tokenData._id == req.params.id || req.tokenData.role === "admin"){            
-            const data = await UserModel.deleteOne({_id:req.params.id});
-            res.status(200).json(data);
-        }
-        else{
-            return res.status(400).json({err:"You are not authorized to delete this user!"})
-        }
 
-    }
-    catch(err){
-        console.log(err);
-        res.status(502).json({err})
-    }
-
-})
 
 
 router.patch("/:id/:role", adminAuth, async(req,res) => {
@@ -119,6 +103,24 @@ router.patch("/:id/:role", adminAuth, async(req,res) => {
       res.status(502).json({err})
     }
   })
+
+router.delete("/:id", userAuth,async(req,res)=>{
+    try{
+        if(req.tokenData._id == req.params.id || req.tokenData.role === "admin"){            
+            const data = await UserModel.deleteOne({_id:req.params.id});
+            res.status(200).json(data);
+        }
+        else{
+            return res.status(400).json({err:"You are not authorized to delete this user!"})
+        }
+
+    }
+    catch(err){
+        console.log(err);
+        res.status(502).json({err})
+    }
+
+})
 
 
 module.exports = router;

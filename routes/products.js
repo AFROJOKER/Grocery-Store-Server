@@ -13,21 +13,24 @@ router.get("/", async(req,res)=>{
         const page = req.query.page - 1 || 0;
         const sort = req.query.sort || "_id";
         const reverse = req.query.reverse == "yes"? -1: 1;
-        const categories = req.query.categories? JSON.parse(req.query.categories): undefined;
+        const categories = req.query.categories && req.query.categories.length < 300? JSON.parse(req.query.categories): undefined;
         const minPrice = req.query.min || 0;
         const maxPrice = req.query.max || Infinity;
-        let filter = {};
+        let filters = {};
         let conditions = [];
 
+        
+
         //Adding Filters
-        const searchExp = new RegExp(req.query.filter, "i");
-        filter.$or = [{name:searchExp},{info:searchExp}];
-        filter.price = {$gte:minPrice, $lte:maxPrice}
-        if(categories){
-            filter.categories = {$in: categories};
+        const filter = req.query.filter && req.query.filter.length < 100? req.query.filter: "";
+        const searchExp = new RegExp(filter, "i");
+        filters.$or = [{name:searchExp},{info:searchExp}];
+        filters.price = {$gte:minPrice, $lte:maxPrice}
+        if(categories && categories.length < 2){
+            filters.categories = {$in: categories};
         }
 
-        const products = await ProductModel.find(filter).limit(limit).skip(page * limit).sort({[sort]:reverse});
+        const products = await ProductModel.find(filters).limit(limit).skip(page * limit).sort({[sort]:reverse});
         res.status(201).json(products);
     }
     catch(err){
